@@ -1,0 +1,171 @@
+Script started on Thu 24 Apr 2025 08:14:47 AM IST
+[23bcs099@mepcolinux ex8]$cat short.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <stdbool.h>
+
+int *parent;
+char *indexToChar;
+int charToIndexMap[256];
+int n;
+
+int bfs(int **rGraph, int s, int t) {
+    bool *visited = (bool *)calloc(n, sizeof(bool));
+    int *queue = (int *)malloc(n * sizeof(int));
+    int front = 0, rear = 0;
+
+    queue[rear++] = s;
+    visited[s] = true;
+    parent[s] = -1;
+
+    while (front < rear) {
+        int u = queue[front++];
+        int v;
+        for (v = 0; v < n; v++) {
+            if (!visited[v] && rGraph[u][v] > 0) {
+                queue[rear++] = v;
+                parent[v] = u;
+                visited[v] = true;
+            }
+        }
+    }
+
+    int found = visited[t];
+    free(queue);
+    free(visited);
+    return found;
+}
+
+void fordFulkerson(int **graph, int s, int t) {
+    int **rGraph = (int **)malloc(n * sizeof(int *));
+    int i;
+    for (i = 0; i < n; i++) {
+        rGraph[i] = (int *)malloc(n * sizeof(int));
+        memcpy(rGraph[i], graph[i], n * sizeof(int));
+    }
+
+    int max_flow = 0, step = 1;
+
+    printf("\nInitially, no path exists.\n");
+
+    while (bfs(rGraph, s, t)) {
+        int path_flow = INT_MAX;
+        int i,v;
+        for (v = t; v != s; v = parent[v])
+            path_flow = (rGraph[parent[v]][v] < path_flow) ? rGraph[parent[v]][v] : path_flow;
+
+        for (v = t; v != s; v = parent[v]) {
+            int u = parent[v];
+            rGraph[u][v] -= path_flow;
+            rGraph[v][u] += path_flow;
+        }
+
+
+        int path[100], count = 0;
+        for (v = t; v != -1; v = parent[v])
+            path[count++] = v;
+
+        printf("%-6d | ", step++);
+        for (i = count - 1; i >= 0; i--) {
+            printf("%c", indexToChar[path[i]]);
+            if (i != 0)
+                printf(" → ");
+        }
+        printf(" | %-11d\n", path_flow);
+
+        max_flow += path_flow;
+    }
+
+
+    printf("Maximum Flow = %d\n", max_flow);
+
+    for (i = 0; i < n; i++)
+        free(rGraph[i]);
+    free(rGraph);
+}
+
+int main() {
+    int i,e;
+    char uChar, vChar;
+    int capacity;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+
+    int **graph = (int **)malloc(n * sizeof(int *));
+    for (i = 0; i < n; i++)
+        graph[i] = (int *)calloc(n, sizeof(int));
+
+    parent = (int *)malloc(n * sizeof(int));
+    indexToChar = (char *)malloc(n * sizeof(char));
+
+    for (i = 0; i < 256; i++)
+        charToIndexMap[i] = -1;
+
+    int currentIndex = 0;
+    printf("Enter edges in format: from to capacity\n");
+    for (i = 0; i < e; i++) {
+        scanf(" %c %c %d", &uChar, &vChar, &capacity);
+
+        if (charToIndexMap[uChar] == -1) {
+            charToIndexMap[uChar] = currentIndex;
+            indexToChar[currentIndex] = uChar;
+            currentIndex++;
+        }
+        if (charToIndexMap[vChar] == -1) {
+            charToIndexMap[vChar] = currentIndex;
+            indexToChar[currentIndex] = vChar;
+            currentIndex++;
+        }
+
+        int u = charToIndexMap[uChar];
+        int v = charToIndexMap[vChar];
+        graph[u][v] = capacity;
+    }
+
+    char sChar, tChar;
+    printf("Enter source vertex: ");
+    scanf(" %c", &sChar);
+    printf("Enter sink vertex: ");
+    scanf(" %c", &tChar);
+
+    int s = charToIndexMap[sChar];
+    int t = charToIndexMap[tChar];
+
+    fordFulkerson(graph, s, t);
+
+    for (i = 0; i < n; i++)
+        free(graph[i]);
+    free(graph);
+    free(parent);
+    free(indexToChar);
+
+    return 0;
+}
+[23bcs099@mepcolinux ex8]$cc short.c
+[23bcs099@mepcolinux ex8]$./a.out
+Enter number of vertices: 5
+Enter number of edges: 6
+Enter edges in format: from to capacity
+1 2 3
+1 5 2
+2 3 5
+2 4 3
+3 4 4
+5 2 5
+Enter source vertex: 1
+Enter sink vertex: 4
+
+Initially, no path exists.
+1      | 1 → 2 → 4 | 3
+2      | 1 → 5 → 2 → 3 → 4 | 2
+Maximum Flow = 5
+[23bcs099@mepcolinux ex8]$exit
+exit
+
+Script done on Thu 24 Apr 2025 08:15:59 AM IST
