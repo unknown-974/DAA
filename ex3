@@ -1,0 +1,223 @@
+Script started on Thursday 06 March 2025 04:20:58 PM IST
+[23bcs108@mepcolinux ex3]$cat min.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+void findMinMax(int arr[], int low, int high, int *min, int *max) {
+
+    if (low == high) {
+        if (arr[low] < *min) {
+            *min = arr[low];
+        }
+        if (arr[low] > *max) {
+            *max = arr[low];
+        }
+        return;
+    }
+    else if (high == low + 1) {
+        if (arr[low] < arr[high]) {
+            if (arr[low] < *min) *min = arr[low];
+            if (arr[high] > *max) *max = arr[high];
+        } else {
+            if (arr[high] < *min) *min = arr[high];
+            if (arr[low] > *max) *max = arr[low];
+        }
+        return;
+    }
+    else{
+        int mid = (low + high) / 2;
+        findMinMax(arr, low, mid, min, max);
+        findMinMax(arr, mid + 1, high, min, max);
+    }
+}
+int main() {
+    int n;
+    printf("\nFINDING MINIMUM AND MAXIMUM ELEMENT IN AN ARRAY :\n------- ------- --- ------- ------- -- -- -----\n");
+    printf("\nEnter number of elements in the array: ");
+    scanf("%d", &n);
+    int i;
+    int *arr = (int *)malloc(n * sizeof(int));
+    printf("\nGETTING INPUTS...\n\n");
+    for (i = 0; i < n; i++) {
+            printf("Enter element %d: ",i+1);
+            scanf("%d", &arr[i]);
+    }
+    int min = INT_MAX;
+    int max = INT_MIN;
+    findMinMax(arr, 0, n - 1, &min, &max);
+    printf("\nRESULT...\n\n");
+    printf("Minimum element is %d\n", min);
+    printf("Maximum element is %d\n\n", max);
+    free(arr);
+    return 0;
+}
+[23bcs108@mepcolinux ex3]$cc min.c
+[23bcs108@mepcolinux ex3]$./a.out
+
+FINDING MINIMUM AND MAXIMUM ELEMENT IN AN ARRAY :
+------- ------- --- ------- ------- -- -- -----
+
+Enter number of elements in the array: 5
+
+GETTING INPUTS...
+
+Enter element 1: 4
+Enter element 2: 6
+Enter element 3: 2
+Enter element 4: 1
+Enter element 5: 9
+
+RESULT...
+
+Minimum element is 1
+Maximum element is 9
+
+[23bcs108@mepcolinux ex3]$./a.out
+
+FINDING MINIMUM AND MAXIMUM ELEMENT IN AN ARRAY :
+------- ------- --- ------- ------- -- -- -----
+
+Enter number of elements in the array: 6
+
+GETTING INPUTS...
+
+Enter element 1: 44
+Enter element 2: 2
+Enter element 3: 1
+Enter element 4: 88
+Enter element 5: 6
+Enter element 6:
+4
+
+RESULT...
+
+Minimum element is 1
+Maximum element is 88
+
+[23bcs108@mepcolinux ex3]$cat quick.c
+#include <stdio.h>
+void printArray(int[],int);
+
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+
+int partition(int arr[], int lb, int ub) {
+    int pivot = arr[lb];
+    int start = lb;
+    int end = ub;
+
+    while (start < end) {
+        while (arr[start] <= pivot) {
+            start++;
+        }
+        while (arr[end] > pivot) {
+            end--;
+        }
+        if (start < end) {
+            swap(&arr[start], &arr[end]);
+        }
+    }
+
+    swap(&arr[lb], &arr[end]);
+    return end;
+}
+
+
+void quickSort(int arr[], int lb, int ub,int n) {
+    if (lb < ub) {
+        int loc = partition(arr, lb, ub);
+        printf("pivot element is: %d",arr[loc]);
+        printf("\nafter pivot swap");
+        printf("\n");
+        printArray(arr,n);
+        quickSort(arr, lb, loc - 1,n);
+        quickSort(arr, loc + 1, ub,n);
+    }
+}
+
+void printArray(int arr[], int size){
+        int i;
+    for ( i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+
+int main() {
+    int n,i;
+    printf("Enter the size of array:");
+    scanf("%d",&n);
+    int arr[n];
+    for(i=0;i<n;i++)
+    {
+            printf("ENTER THE element:");
+            scanf("%d",&arr[i]);
+    }
+
+
+
+    printf("Original array: \n");
+    printArray(arr, n);
+
+    quickSort(arr, 0, n - 1,n);
+
+    printf("Sorted array: \n");
+    printArray(arr, n);
+
+    return 0;
+}
+[23bcs108@mepcolinux ex3]$cc quick.c
+[23bcs108@mepcolinux ex3]$ls
+a.out  ex3.prn  min.c  quick.c
+[23bcs108@mepcolinux ex3]$./a.out
+Enter the size of array:7
+ENTER THE element:12
+ENTER THE element:54
+ENTER THE element:76
+ENTER THE element:99
+ENTER THE element:21
+ENTER THE element:34
+ENTER THE element:8
+Original array:
+12 54 76 99 21 34 8
+pivot element is: 12
+after pivot swap
+8 12 76 99 21 34 54
+pivot element is: 76
+after pivot swap
+8 12 34 54 21 76 99
+pivot element is: 34
+after pivot swap
+8 12 21 34 54 76 99
+Sorted array:
+8 12 21 34 54 76 99
+[23bcs108@mepcolinux ex3]$./a.out
+Enter the size of array:5
+ENTER THE element:11
+ENTER THE element:22
+ENTER THE element:99
+ENTER THE element:33
+ENTER THE element:3
+Original array:
+11 22 99 33 3
+pivot element is: 11
+after pivot swap
+3 11 99 33 22
+pivot element is: 99
+after pivot swap
+3 11 22 33 99
+pivot element is: 22
+after pivot swap
+3 11 22 33 99
+Sorted array:
+3 11 22 33 99
+[23bcs108@mepcolinux ex3]$exit
+exit
+
+Script done on Thursday 06 March 2025 04:23:01 PM IST
+[23bcs108@mepcolinux ex3]$
