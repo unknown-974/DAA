@@ -1,0 +1,174 @@
+Script started on Wed 12 Feb 2025 03:07:52 PM IST
+[?1034h[23bcs108@mepcolinux ex2]$cat str.c
+#include<stdio.h>
+#include<stdlib.h>
+void print(char *pattern,int i)
+{
+   int j;
+   for(j=0;j<i;j++)
+      printf(" ");
+   printf("%s",pattern);
+   printf("\n");
+}
+int StringSearch(char *text,int n,char *pattern,int m)
+{
+   int i,j;
+   for(i=0;i<=n-m;i++)
+   {
+      print(pattern,i);
+      j=0;
+      while(j<m && pattern[j]==text[i+j])
+      {
+         j++;
+      }
+      if(j==m)
+         return i;
+   }
+   return -1;
+}
+int main()
+{
+   int i,val;
+   char *text=(char*)malloc(100*sizeof(char));
+   printf("Enter the text:");
+   gets(text);
+   text=(char*)realloc(text,sizeof(text)+1);
+   char *pattern=(char*)malloc(100*sizeof(char));
+   printf("Enter the pattern:");
+   gets(pattern);
+   pattern=(char*)realloc(pattern,sizeof(pattern)+1);
+   printf("%s\n",text);
+   val=StringSearch(text,strlen(text),pattern,strlen(pattern));
+   if(val==-1)
+      printf("No match found\n");
+   else
+      printf("Substring is present and its starting index is %d\n",val);
+}
+
+[23bcs108@mepcolinux ex2]$./a.out
+Enter the text:mohan is a good boy
+Enter the pattern:oy
+mohan is a good boy
+oy
+ oy
+  oy
+   oy
+    oy
+     oy
+      oy
+       oy
+        oy
+         oy
+          oy
+           oy
+            oy
+             oy
+              oy
+               oy
+                oy
+                 oy
+Substring is present and its starting index is 17
+[23bcs108@mepcolinux ex2]$./a.out
+Enter the text:mohan is a good boy
+Enter the pattern:naveen
+mohan is a good boy
+naveen
+ naveen
+  naveen
+   naveen
+    naveen
+     naveen
+      naveen
+       naveen
+        naveen
+         naveen
+          naveen
+           naveen
+            naveen
+             naveen
+No match found
+[23bcs108@mepcolinux ex2]$cat clo.c
+#include<stdio.h>
+#include<math.h>
+struct point{
+   float x;
+   float y;
+};
+float FindClosest(int n,struct point pt[],struct point closest[])
+{
+   int i,j;
+   float min=9999,distance;
+   for(i=0;i<n-1;i++)
+   {
+      for(j=i+1;j<n;j++)
+      {
+         distance=sqrt(pow(pt[i].x-pt[j].x,2)+pow(pt[i].y-pt[j].y,2));
+         if(distance<min)
+         {
+            min=distance;
+            closest[0]=pt[i];
+            closest[1]=pt[j];
+         }
+      }
+   }
+   return min;
+}
+int main()
+{
+   int i,n;
+   float min_dis;
+   printf("Enter the number of points:");
+   scanf("%d",&n);
+   struct point pt[n];
+   struct point closest[2];
+   printf("Enter the points as x,y pairs:\n");
+   for(i=0;i<n;i++)
+   {
+      printf("point %d:",i+1);
+      scanf("%f%f",&pt[i].x,&pt[i].y);
+      min_dis = FindClosest(n,pt,closest);
+   }
+   printf("The minimum distance between the points is %.2f\n",min_dis);
+   printf("The minimum distance is between points (%.2f,%.2f) and (%.2f,%.2f)\n",closest[0].x,closest[0].y,closest[1].x,closest[1].y);
+   return 0;
+}
+[23bcs108@mepcolinux ex2]$cc clo.c
+/tmp/cctEXekV.o: In function `FindClosest':
+clo.c:(.text+0x84): undefined reference to `pow'
+clo.c:(.text+0xdd): undefined reference to `pow'
+clo.c:(.text+0xe7): undefined reference to `sqrt'
+collect2: error: ld returned 1 exit status
+[23bcs108@mepcolinux ex2]$cc clo.c -lm
+[23bcs108@mepcolinux ex2]$./a.out
+Enter the number of points:3
+Enter the points as x,y pairs:
+point 1:1 2
+point 2:2 3
+point 3:3 4
+The minimum distance between the points is 1.41
+The minimum distance is between points (1.00,2.00) and (2.00,3.00)
+[23bcs108@mepcolinux ex2]$./a.out
+Enter the number of points:5
+Enter the points as x,y pairs:
+point 1:1 2
+point 2:2 3
+point 3:3 4
+point 4:4 5
+point 5:5 6
+The minimum distance between the points is 1.41
+The minimum distance is between points (1.00,2.00) and (2.00,3.00)
+[23bcs108@mepcolinux ex2]$./a.out
+Enter the number of points:5
+Enter the points as x,y pairs:
+point 1:2 4
+point 2:2.5 3.5
+point 3:5 6
+point 4:7 8
+point 5:3 5
+The minimum distance between the points is 0.71
+The minimum distance is between points (2.00,4.00) and (2.50,3.50)
+[23bcs108@mepcolinux ex2]$exit
+exit
+
+Script done on Wed 12 Feb 2025 03:12:28 PM IST
+[23bcs108@mepcolinux ex2]$
